@@ -97,6 +97,18 @@ class Job
         echo "ok";
     }
 
+    public static function addClassExpire()
+    {
+        $users = User::all();
+        foreach ($users as $user) {
+            echo "Add one month class expire time to user: ".$user->id;
+            if ($user->class !=0) {
+                $user->class_expire = date("Y-m-d H:i:s",strtotime("+1 month", strtotime($user->class_expire)));
+                $user->save();
+            }
+        }
+    }
+
     public static function UserGa()
     {
         $users = User::all();
@@ -136,14 +148,22 @@ class Job
             }
         }
 
-        NodeInfoLog::where("log_time", "<", time()-86400*3)->delete();
-        NodeOnlineLog::where("log_time", "<", time()-86400*3)->delete();
-        TrafficLog::where("log_time", "<", time()-86400*3)->delete();
-        DetectLog::where("datetime", "<", time()-86400*3)->delete();
-        Speedtest::where("datetime", "<", time()-86400*3)->delete();
-        EmailVerify::where("expire_in", "<", time()-86400*3)->delete();
+        NodeInfoLog::where("log_time", "<", time()-86400)->delete();
+        NodeOnlineLog::where("log_time", "<", time()-86400)->delete();
+        TrafficLog::where("log_time", "<", time()-86400)->delete();
+        DetectLog::where("datetime", "<", time()-86400)->delete();
+        Speedtest::where("datetime", "<", time()-86400)->delete();
+        EmailVerify::where("expire_in", "<", time()-86400)->delete();
         Telegram::Send("姐姐姐姐，数据库被清理了，感觉身体被掏空了呢~");
 
+		if(date("d")==1)
+		{
+			NodeInfoLog::truncate();
+			NodeOnlineLog::truncate();
+			TrafficLog::truncate();
+			DetectLog::truncate();
+			Telegram::Send("月初清理已完毕~");
+		}
         //auto reset
         $boughts=Bought::all();
         foreach ($boughts as $bought) {
@@ -292,6 +312,16 @@ class Job
             }
 
             $alive_ipset[$full_alive_ip->userid]->append($full_alive_ip);
+        }
+
+        $nodes = Node::where("is_sync_ip","=","1")->get();
+        foreach ($nodes as $node) {
+            if ($node->sort!=999 && $node->sort!=9) {
+                echo "Now is update the server ".$node->name."'s IP addr!";
+                $ip=gethostbyname($node->server);
+                $node->node_ip=$ip;
+                $node->save();
+            }
         }
 
         foreach ($users as $user) {
@@ -776,6 +806,21 @@ class Job
 
                 $user->class=0;
             }
+
+            if ($user->class!=0 && (strtotime($user->class_expire) - time() < 259200) && (259240 <= strtotime($user->class_expire) - time()) && strtotime($user->class_expire) > 1420041600) {
+                $subject = Config::get('appName')."-您的用户等级即将在3天后过期";
+                    $to = $user->email;
+                    $text = "您好，系统发现您的账号等级即将在 3 天后过期。如需继续使用本站服务，请登录用户中心续费；如果您已开启自动续费且余额充足，请忽略本邮件提醒。感谢您的再次使用。" ;
+                    try {
+                        Mail::send($to, $subject, 'news/warn.tpl', [
+                            "user" => $user,"text" => $text
+                        ], [
+                        ]);
+                    } catch (Exception $e) {
+                        echo $e->getMessage();
+                    }
+            }
+
 
             if ($user->class!=0 && strtotime($user->class_expire)<time() && strtotime($user->class_expire) > 1420041600) {
                 $user->class=0;

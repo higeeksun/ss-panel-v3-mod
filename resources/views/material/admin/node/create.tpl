@@ -36,6 +36,14 @@
 										<input class="form-control" id="node_ip" name="node_ip" type="text">
 									</div>
 
+                                    <div class="form-group form-group-label">
+                                    <div class="checkbox switch">
+                                    <label for="auto_sync">
+                                        <input class="access-hide" id="auto_sync" type="checkbox" name="auto_sync"><span class="switch-toggle"></span>自动同步IP
+                                    </label>
+                                    </div>
+                                    </div>
+
 									<div class="form-group form-group-label" hidden="hidden">
 										<label class="floating-label" for="method">加密方式</label>
 										<input class="form-control" id="method" type="text" name="method" value="aes-256-cfb">
@@ -228,6 +236,16 @@
 			{
 				var type=0;
 			}
+
+			if(document.getElementById('auto_sync').checked)
+            {
+                var auto_sync=1;
+            }
+            else
+            {
+                var auto_sync=0;
+            }
+
 			{/literal}
 			if(document.getElementById('custom_rss').checked)
 			{
@@ -249,6 +267,7 @@
 										node_ip: $("#node_ip").val(),
                     method: $("#method").val(),
                     custom_method: custom_method,
+                    auto_sync: auto_sync,
                     rate: $("#rate").val(),
                     info: $("#info").val(),
                     type: type,

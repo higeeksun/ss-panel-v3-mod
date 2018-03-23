@@ -48,6 +48,7 @@ class NodeController extends AdminController
         $node->traffic_rate = $request->getParam('rate');
         $node->info = $request->getParam('info');
         $node->type = $request->getParam('type');
+        $node->is_sync_ip = $request->getParam('auto_sync');
         $node->node_group = $request->getParam('group');
         $node->node_speedlimit = $request->getParam('node_speedlimit');
         $node->status = $request->getParam('status');
@@ -106,6 +107,7 @@ class NodeController extends AdminController
         $node->traffic_rate = $request->getParam('rate');
         $node->info = $request->getParam('info');
         $node->node_speedlimit = $request->getParam('node_speedlimit');
+        $node->is_sync_ip = $request->getParam('auto_sync');
         $node->type = $request->getParam('type');
         $node->sort = $request->getParam('sort');
 

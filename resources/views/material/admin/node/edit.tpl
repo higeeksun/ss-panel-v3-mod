@@ -38,6 +38,14 @@
 										<input class="form-control" id="node_ip" name="node_ip" type="text" value="{$node->node_ip}">
 									</div>
 
+                                    <div class="form-group form-group-label">
+                                    <div class="checkbox switch">
+                                    <label for="auto_sync">
+                                    <input {if $node->is_sync_ip==1}checked{/if} class="access-hide" id="auto_sync" type="checkbox" name="auto_sync"><span class="switch-toggle"></span>自动同步IP
+                                    </label>
+                                    </div>
+                                    </div>
+
 									<div class="form-group form-group-label" hidden="hidden">
 										<label class="floating-label" for="method">加密方式</label>
 										<input class="form-control" id="method" name="method" type="text" value="{$node->method}">
@@ -226,6 +234,16 @@
 			{
 				var type=0;
 			}
+
+            if(document.getElementById('auto_sync').checked)
+            {
+                var auto_sync=1;
+            }
+                else
+            {
+            var auto_sync=0;
+            }
+
 			{/literal}
 			if(document.getElementById('custom_rss').checked)
 			{
@@ -252,6 +270,7 @@
                     custom_method: custom_method,
                     rate: $("#rate").val(),
                     info: $("#info").val(),
+                    auto_sync: auto_sync,
                     type: type,
 										group: $("#group").val(),
                     status: $("#status").val(),

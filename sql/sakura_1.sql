@@ -1,0 +1,1 @@
+ALTER TABLE `ss_node` ADD `is_sync_ip` INT(1) NOT NULL DEFAULT '0' AFTER `mu_only`;
